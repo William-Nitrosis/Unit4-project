@@ -33,7 +33,7 @@ void AenemyAi::Tick(float DeltaTime)
 void AenemyAi::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
-
+	
 }
 
 

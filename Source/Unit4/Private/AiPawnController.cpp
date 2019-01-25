@@ -27,5 +27,5 @@ void AAiPawnController::Tick(float DeltaTime)
 
 void PathfindActor(AActor* enemyToMove)
 {
-
+	UE_LOG(LogTemp, Log, TEXT("OMG GIVE A PATHFIND"));
 }

@@ -34,12 +34,8 @@ void AaiSpawner::spawnAi() {
 
 	int randomSpawnIndex = FMath::RandRange(0, spawnAreas.Num()-1);
 
-	UE_LOG(LogTemp, Log, TEXT("suuuuuup"));
-
 	AspawnArea *temp = Cast<AspawnArea>(spawnAreas[randomSpawnIndex]);
 	if (temp->spawnable) {
-		UE_LOG(LogTemp, Log, TEXT("suuuuuup222222222222222222"));
-
 		//UE_LOG(LogTemp, Warning, TEXT("%s"), *spawnAreas[randomSpawnIndex]->GetName()); // Check if they are spawnable
 		// Spawn ai
 		//temp->GetComponentsBoundingBox();
