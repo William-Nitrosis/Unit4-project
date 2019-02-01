@@ -1,6 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "playerCharacter.h"
+#include "enemyAi.h"
 
 
 // Sets default values
