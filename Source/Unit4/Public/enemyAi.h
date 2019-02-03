@@ -4,53 +4,35 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+#include "Engine.h"
 #include "enemyAi.generated.h"
 
-
-//If you want this to appear in BP, make sure to use this instead
-//USTRUCT(BlueprintType)
+/*
 USTRUCT()
 struct FPlayerStateStruct
 {
 	GENERATED_BODY()
 
-		//Always make USTRUCT variables into UPROPERTY()
-		//    any non-UPROPERTY() struct vars are not replicated
-
-		// So to simplify your life for later debugging, always use UPROPERTY()
-		UPROPERTY()
-		int32 SampleInt32;
-
-	//If you want the property to appear in BP, make sure to use this instead
-	//UPROPERTY(BlueprintReadOnly)
 	UPROPERTY()
-		AActor* TargetActor;
+	int32 SampleInt32;
 
 	//Constructor
 	FPlayerStateStruct()
 	{
-		//Always initialize your USTRUCT variables!
-		//   exception is if you know the variable type has its own default constructor
 		SampleInt32 = 5;
-		TargetActor = NULL;
 	}
 };
 
-USTRUCT()
-struct FPlayerStateStructInherited : public FPlayerStateStruct
+// Enum AiType
+enum AiType
 {
-	GENERATED_BODY()
-
-
-	//Constructor
-	FPlayerStateStructInherited()
-	{
-		//Always initialize your USTRUCT variables!
-		//   exception is if you know the variable type has its own default constructor
-		SampleInt32 = 5;
-		TargetActor = NULL;
-	}
+AiType_Orc,
+AiType_Goblin,
+AiType_Ogre
 };
+AiType AiType_ = AiType_Goblin;
+
+*/
 
 
 UCLASS()
@@ -62,10 +44,19 @@ public:
 	// Sets default values for this character's properties
 	AenemyAi();
 
-	//this is the highlander!
-	static FPlayerStateStruct player_struct;
-	static FPlayerStateStructInherited struct2;
+	enum State
+	{
+		State_idle,
+		State_pathfind,
+		State_attack
+	};
 
+	State state_ = State_idle;
+
+	bool bCanPathfind = true;
+	TArray<AActor*> TargetActors;
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<AActor> ClassToFind; // Needs to be populated somehow (e.g. by exposing to blueprints as uproperty and setting it there
 
 protected:
 	// Called when the game starts or when spawned
@@ -78,7 +69,5 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
-	
-	
-};
 
+};
