@@ -9,6 +9,6 @@ public class Unit4EditorTarget : TargetRules
 	{
 		Type = TargetType.Editor;
 
-		ExtraModuleNames.AddRange( new string[] { "Unit4" } );
+		ExtraModuleNames.AddRange( new string[] { "Unit4"} );
 	}
 }

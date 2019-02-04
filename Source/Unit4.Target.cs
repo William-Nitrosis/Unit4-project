@@ -9,6 +9,6 @@ public class Unit4Target : TargetRules
 	{
 		Type = TargetType.Game;
 
-		ExtraModuleNames.AddRange( new string[] { "Unit4" } );
+		ExtraModuleNames.AddRange( new string[] { "Unit4"} );
 	}
 }

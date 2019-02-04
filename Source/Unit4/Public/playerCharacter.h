@@ -63,5 +63,5 @@ public:
 	void ActivateCam();
 	void ToggleCameraPressed();
 	void ToggleCameraReleased();
-	bool firstPerson = false;
+	bool firstPerson = true;
 };
