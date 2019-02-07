@@ -45,6 +45,7 @@ enum class State : uint8
 	State_attack	UMETA(DisplayName = "State_attack")
 };
 
+
 UCLASS()
 class UNIT4_API AenemyAi : public ACharacter
 {

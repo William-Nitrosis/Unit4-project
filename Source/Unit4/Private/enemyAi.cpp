@@ -74,6 +74,8 @@ void AenemyAi::Tick(float DeltaTime)
 			PlayerRot.Pitch = 0.f;
 
 			this->SetActorRotation(PlayerRot);
+
+			//UGameplayStatics::ApplyDamage(attackTarget, 10.f, this->AiController, this, );
 			break;
 	}
 
