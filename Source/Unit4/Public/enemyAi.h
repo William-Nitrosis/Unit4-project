@@ -8,6 +8,7 @@
 #include "Tasks/AITask.h"
 #include "Tasks/AITask_MoveTo.h"
 #include "Engine.h"
+#include "po_barricade.h"
 #include "enemyAi.generated.h"
 
 /*
@@ -36,7 +37,13 @@ AiType_Ogre
 AiType AiType_ = AiType_Goblin;
 
 */
-
+UENUM(BlueprintType)
+enum class State : uint8
+{
+	State_idle 	UMETA(DisplayName = "State_idle"),
+	State_pathfind 	UMETA(DisplayName = "State_pathfind"),
+	State_attack	UMETA(DisplayName = "State_attack")
+};
 
 UCLASS()
 class UNIT4_API AenemyAi : public ACharacter
@@ -47,13 +54,9 @@ public:
 	// Sets default values for this character's properties
 	AenemyAi();
 
-	enum State
-	{
-		State_idle,
-		State_pathfind,
-		State_attack
-	};
-	State state_ = State_idle;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Enum)
+	State state_ = State::State_idle;
 
 	bool bCanPathfind = true;
 	TArray<AActor*> TargetActors;
@@ -62,7 +65,7 @@ public:
 	TSubclassOf<AActor> ClassToFind; // Needs to be populated somehow (e.g. by exposing to blueprints as uproperty and setting it there
 	AAIController * AiController;
 
-	float AttackRange = 400.f;
+	float AttackRange = 150.f;
 	USphereComponent* RangeSphereComponent;
 
 	UFUNCTION()
@@ -70,6 +73,8 @@ public:
 
 	UFUNCTION()
 	void OnRangeSphereEndOverlap(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
+
+	AActor* attackTarget;
 
 
 
