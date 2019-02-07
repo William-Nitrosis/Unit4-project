@@ -32,6 +32,7 @@ void AenemyAi::BeginPlay()
 
 void AenemyAi::OnMoveCompleted(FAIRequestID id, const FPathFollowingResult& result) {
 	UE_LOG(LogTemp, Warning, TEXT("path done bruh!"));
+	bCanPathfind = false;
 }
 
 
@@ -54,14 +55,14 @@ void AenemyAi::Tick(float DeltaTime)
 
 				if (AiController) {
 					AiController->MoveToActor(TargetActors[0], AttackRange, true, true, true, 0, true);
-
+					
 				}
 				bCanPathfind = false;
 			}
 			break;
 
 		case State_attack:
-			UE_LOG(LogTemp, Warning, TEXT("State_pathfind"));
+			UE_LOG(LogTemp, Warning, TEXT("State_attack"));
 			break;
 	}
 
@@ -80,6 +81,8 @@ void AenemyAi::OnRangeSphereBeginOverlap(UPrimitiveComponent* OverlappedComp, AA
 	if (OtherActor && (OtherActor != this) && OtherComp)
 	{
 		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Overlap Begin"));
+		//state_ = State_attack;
+		UE_LOG(LogTemp, Error, TEXT("%s"), *OtherActor->GetName());
 	}
 }
 
