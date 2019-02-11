@@ -9,7 +9,10 @@
 #include "Tasks/AITask_MoveTo.h"
 #include "Engine.h"
 #include "po_barricade.h"
+#include "playerCharacter.h"
 #include "enemyAi.generated.h"
+
+#define GETENUMSTRING(etype, evalue) ( (FindObject<UEnum>(ANY_PACKAGE, TEXT(etype), true) != nullptr) ? FindObject<UEnum>(ANY_PACKAGE, TEXT(etype), true)->GetEnumName((int32)evalue) : FString("Invalid - are you sure enum uses UENUM() macro?") )
 
 /*
 USTRUCT()
@@ -45,6 +48,12 @@ enum class State : uint8
 	State_attack	UMETA(DisplayName = "State_attack")
 };
 
+UENUM(BlueprintType)
+enum class UnitType : uint8
+{
+	Unit_knight 	UMETA(DisplayName = "Unit_knight"),
+	Unit_archer 	UMETA(DisplayName = "Unit_archer")
+};
 
 UCLASS()
 class UNIT4_API AenemyAi : public ACharacter
@@ -66,7 +75,6 @@ public:
 	TSubclassOf<AActor> ClassToFind; // Needs to be populated somehow (e.g. by exposing to blueprints as uproperty and setting it there
 	AAIController * AiController;
 
-	float AttackRange = 150.f;
 	USphereComponent* RangeSphereComponent;
 
 	UFUNCTION()
@@ -75,7 +83,18 @@ public:
 	UFUNCTION()
 	void OnRangeSphereEndOverlap(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
 
+
+	virtual void OnConstruction(const FTransform& Transform) override;
+
 	AActor* attackTarget;
+
+	UFUNCTION(BlueprintCallable)
+	void tryDoDamage();
+
+	Apo_barricade* barricadePointer;
+	AplayerCharacter* playerPointer;
+
+
 
 
 
@@ -93,6 +112,57 @@ public:
 
 
 	void OnMoveCompleted(FAIRequestID id, const FPathFollowingResult& result);
+
+
+	FRotator MeshOffset = FRotator(0.f, 0.f, 0.f);
+	// Load in meshes 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Enemy SK and AN")
+	USkeletalMesh* SK_knight;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Enemy SK and AN")
+	UClass* Anim_knight;
+	
+
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Enemy SK and AN")
+	USkeletalMesh* SK_archer;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Enemy SK and AN")
+	UClass* Anim_archer;
+	
+
+
+	// === Character stats === //
+
+	// Unit type to look up data for
+	UnitType UnitType_ = UnitType::Unit_archer;
+
+
+	// === Default values for lookup === //
+	// Attack range of the weapon - ie sight length for ranged weapons
+	UPROPERTY(EditAnywhere, Category = WeaponStat)
+	float AttackRange = 0.f;
+
+	// The damage of the weapon
+	UPROPERTY(EditAnywhere, Category = WeaponStat)
+	float AttackDamage = 0.f;
+
+	// The time in seconds for each attack loop 
+	UPROPERTY(EditAnywhere, Category = WeaponStat)
+	float AttackCooldown = 0.f;
+
+	// The type of damage
+	UPROPERTY(EditAnywhere, Category = WeaponStat)
+	TSubclassOf<UDamageType> DamageType;
+
+
+	// Timing variables
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float TimeLeftOnAttack = AttackCooldown;
+
+	// Whether or not to ignore the player 
+	bool bIgnorePlayer = FMath::RandRange(0, 1);;
+
+
+	bool bPlayerInRange = false;
 
 
 };

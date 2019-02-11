@@ -9,16 +9,52 @@ AenemyAi::AenemyAi()
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
-	// add the shit to the object
+	//UE_LOG(LogTemp, Error, TEXT("UnitType_ as string : %s"), *GETENUMSTRING("UnitType", UnitType_));
+
+	TimeLeftOnAttack = AttackCooldown;
+
+	// Add objects and set params
 	RangeSphereComponent = CreateDefaultSubobject<USphereComponent>(TEXT("RangeSphere"));
 	RangeSphereComponent->bHiddenInGame = false;
-	RangeSphereComponent->SetSphereRadius(AttackRange);
 	RangeSphereComponent->SetupAttachment(RootComponent);
 	RangeSphereComponent->SetRelativeLocation(FVector(0.f, 0.f, 0.f));
-
 	RangeSphereComponent->OnComponentBeginOverlap.AddDynamic(this, &AenemyAi::OnRangeSphereBeginOverlap);
 	RangeSphereComponent->OnComponentEndOverlap.AddDynamic(this, &AenemyAi::OnRangeSphereEndOverlap);
 }
+
+void AenemyAi::OnConstruction(const FTransform & Transform)
+{
+	// Data lookup and variable setting
+	switch (UnitType_)
+	{
+	case UnitType::Unit_knight:
+		AttackRange = 150.f;
+		AttackDamage = 25.f;
+		AttackCooldown = 3.f;
+		DamageType = UDamageType::StaticClass();
+		this->GetMesh()->SetSkeletalMesh(SK_knight);
+		this->GetMesh()->SetAnimInstanceClass(Anim_knight);
+		UE_LOG(LogTemp, Warning, TEXT("Set unit type KNIGHT"));
+		MeshOffset = FRotator(0.f, 0.f, 0.f);
+		this->GetMesh()->AddLocalRotation(MeshOffset);
+		break;
+
+	case UnitType::Unit_archer:
+		AttackRange = 1000.f;
+		AttackDamage = 10.f;
+		AttackCooldown = 2.f;
+		DamageType = UDamageType::StaticClass();
+		this->GetMesh()->SetSkeletalMesh(SK_archer);
+		this->GetMesh()->SetAnimInstanceClass(Anim_archer);
+		UE_LOG(LogTemp, Warning, TEXT("Set unit type ARCHER"));
+		MeshOffset = FRotator(0.f, -90.f, 0.f);
+		this->GetMesh()->AddLocalRotation(MeshOffset);
+		break;
+	}
+
+	RangeSphereComponent->SetSphereRadius(AttackRange);
+}
+
 
 // Called when the game starts or when spawned
 void AenemyAi::BeginPlay()
@@ -26,6 +62,7 @@ void AenemyAi::BeginPlay()
 	Super::BeginPlay();
 
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ClassToFind, TargetActors);
+
 	AiController = Cast<AAIController>(this->GetController());
 	AiController->GetPathFollowingComponent()->OnRequestFinished.AddUObject(this, &AenemyAi::OnMoveCompleted);
 	
@@ -59,7 +96,7 @@ void AenemyAi::Tick(float DeltaTime)
 			if (bCanPathfind) {
 				UE_LOG(LogTemp, Warning, TEXT("State_pathfind"));
 				UE_LOG(LogTemp, Warning, TEXT("%s"), *TargetActors[0]->GetName());
-
+				
 				if (AiController) {
 					AiController->MoveToActor(TargetActors[0], AttackRange, true, true, true, 0, true);
 				}
@@ -68,15 +105,25 @@ void AenemyAi::Tick(float DeltaTime)
 			break;
 
 	case State::State_attack:
-			UE_LOG(LogTemp, Warning, TEXT("State_attack"));
 			this->GetCharacterMovement()->StopMovementImmediately();
 			FRotator PlayerRot = UKismetMathLibrary::FindLookAtRotation(this->GetActorLocation(), attackTarget->GetActorLocation());
 			PlayerRot.Pitch = 0.f;
 
 			this->SetActorRotation(PlayerRot);
 
-			//UGameplayStatics::ApplyDamage(attackTarget, 10.f, this->AiController, this, );
-			break;
+			TimeLeftOnAttack -= DeltaTime;
+			if (IsValid(attackTarget))
+			{
+				if (TimeLeftOnAttack <= 0)
+				{
+					TimeLeftOnAttack = AttackCooldown;
+				}
+				break;
+			} else
+			{
+				state_ = State::State_idle;
+			}
+
 	}
 
 }
@@ -93,25 +140,50 @@ void AenemyAi::OnRangeSphereBeginOverlap(UPrimitiveComponent* OverlappedComp, AA
 
 	if (OtherActor && (OtherActor != this) && OtherComp)
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Overlap Begin"));
+		//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Overlap Begin"));
 		//state_ = State_attack;
 		UE_LOG(LogTemp, Error, TEXT("%s"), *OtherActor->GetName());
 
-		Apo_barricade* barricade = Cast<Apo_barricade>(OtherActor);
-		if (barricade)
+		barricadePointer = Cast<Apo_barricade>(OtherActor);
+		playerPointer = Cast<AplayerCharacter>(OtherActor);
+
+		if (barricadePointer)
 		{
 			attackTarget = OtherActor;
 			state_ = State::State_attack;
-			return;
+		} else if (playerPointer && !bIgnorePlayer && state_ != State::State_attack)
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Overlap player"));
+			attackTarget = OtherActor;
+			bPlayerInRange = true;
+			state_ = State::State_attack;
 		}
 	}
 }
 
 void AenemyAi::OnRangeSphereEndOverlap(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex) {
 
-	if (OtherActor && (OtherActor != this) && OtherComp)
+	if (OtherActor && (OtherActor != this) && OtherComp && !Cast<Apo_barricade>(attackTarget))
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Overlap End"));
-		state_ = State::State_idle;
+		//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Overlap End"));
+		//state_ = State::State_idle;
+
+		barricadePointer = Cast<Apo_barricade>(OtherActor);
+		playerPointer = Cast<AplayerCharacter>(OtherActor);
+
+		if (playerPointer && !bIgnorePlayer)
+		{
+			bPlayerInRange = false;
+			state_ = State::State_idle;
+		}
+	}
+}
+
+void AenemyAi::tryDoDamage()
+{
+	if (IsValid(attackTarget))
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("DO DAMAGE"));
+		UGameplayStatics::ApplyDamage(attackTarget, AttackDamage, this->AiController, this, DamageType);
 	}
 }
