@@ -22,7 +22,6 @@ void AspawnArea::BeginPlay()
 void AspawnArea::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
 }
 
 // Called to bind functionality to input

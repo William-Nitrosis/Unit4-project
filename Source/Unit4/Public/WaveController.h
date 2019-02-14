@@ -24,4 +24,12 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 	
+
+	float GR = 1.61803399;
+
+	float Difficulty = 1;
+	int CurrentWave = 0;
+	int AiDBLookup = 0;
+	int AiToSpawnTotal = 0;
+
 };

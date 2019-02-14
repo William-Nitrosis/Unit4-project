@@ -89,7 +89,10 @@ public:
 	AActor* attackTarget;
 
 	UFUNCTION(BlueprintCallable)
+	void fireArrow();
+	UFUNCTION(BlueprintCallable)
 	void tryDoDamage();
+	
 
 	Apo_barricade* barricadePointer;
 	AplayerCharacter* playerPointer;
@@ -127,30 +130,33 @@ public:
 	USkeletalMesh* SK_archer;
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Enemy SK and AN")
 	UClass* Anim_archer;
+
+	UClass* ArrowDefault = LoadObject<UClass>(this, *FString("Class'/Game/Blueprint/BP_Projectile_Arrow.BP_Projectile_Arrow_C'"));
 	
 
 
 	// === Character stats === //
 
 	// Unit type to look up data for
-	UnitType UnitType_ = UnitType::Unit_archer;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Unit type to spawn")
+	UnitType UnitType_ = UnitType::Unit_knight;
 
 
 	// === Default values for lookup === //
 	// Attack range of the weapon - ie sight length for ranged weapons
-	UPROPERTY(EditAnywhere, Category = WeaponStat)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon Stats")
 	float AttackRange = 0.f;
 
 	// The damage of the weapon
-	UPROPERTY(EditAnywhere, Category = WeaponStat)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon Stats")
 	float AttackDamage = 0.f;
 
 	// The time in seconds for each attack loop 
-	UPROPERTY(EditAnywhere, Category = WeaponStat)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon Stats")
 	float AttackCooldown = 0.f;
 
 	// The type of damage
-	UPROPERTY(EditAnywhere, Category = WeaponStat)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon Stats")
 	TSubclassOf<UDamageType> DamageType;
 
 

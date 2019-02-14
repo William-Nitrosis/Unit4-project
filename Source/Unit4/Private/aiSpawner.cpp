@@ -1,6 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "aiSpawner.h"
+#include <functional>
 
 
 // Sets default values
@@ -55,9 +56,15 @@ void AaiSpawner::spawnAi() {
 		transform.SetRotation(FQuat(Rotation));
 
 
-		UE_LOG(LogTemp, Log, TEXT("%s"), *class_to_spawn->GetName());
-		GetWorld()->SpawnActor(class_to_spawn, &transform);
-		//GetWorld()->SpawnActor<AenemyAi>(randomBoxPos, Rotation);
+		UE_LOG(LogTemp, Log, TEXT("Trying to spawn class : %s"), *class_to_spawn->GetName());
+		AActor* SpawnedAi = GetWorld()->SpawnActor(class_to_spawn, &transform);
+		
+		//AenemyAi* SpawnedAi = GetWorld()->SpawnActor<AenemyAi>(randomBoxPos, Rotation);
+		UE_LOG(LogTemp, Log, TEXT("Class spawned"));
+
+		if (IsValid(SpawnedAi)) { UE_LOG(LogTemp, Log, TEXT("SpawnedAi is valid")); } else { UE_LOG(LogTemp, Log, TEXT("SPawnedAi is not valid")); }
+
+		
 
 	}
 

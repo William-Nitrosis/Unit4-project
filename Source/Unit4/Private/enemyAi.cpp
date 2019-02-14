@@ -187,3 +187,25 @@ void AenemyAi::tryDoDamage()
 		UGameplayStatics::ApplyDamage(attackTarget, AttackDamage, this->AiController, this, DamageType);
 	}
 }
+
+void AenemyAi::fireArrow()
+{
+	if (IsValid(attackTarget))
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("FIRE ARROW"));
+		//UGameplayStatics::ApplyDamage(attackTarget, AttackDamage, this->AiController, this, DamageType);
+
+		FVector ArrowSpawnLocation = this->GetMesh()->GetSocketLocation("ArrowFirePoint");
+		FRotator ArrowSpawnRotation =UKismetMathLibrary::FindLookAtRotation(this->GetActorLocation(), attackTarget->GetActorLocation());
+			
+		FActorSpawnParameters ArrowSpawnInfo;
+		ArrowSpawnInfo.Instigator = this;
+		ArrowSpawnInfo.Owner = this;
+
+		if (IsValid(ArrowDefault))
+		{
+			AActor* SpawnedArrow = GetWorld()->SpawnActor<AActor>(ArrowDefault, ArrowSpawnLocation, ArrowSpawnRotation, ArrowSpawnInfo);
+		}
+
+	}
+}
