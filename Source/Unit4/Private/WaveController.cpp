@@ -100,6 +100,23 @@ void AWaveController::Tick(float DeltaTime)
 
 void AWaveController::StartWave() {
 
+	AiDBLookup = 0;
+	AiToSpawnTotal = 0;
+	AiSpawned = 0;
+	TotalTime = 0;
+	CurrentTime = 0;
+	TimeSinceLastSpawn = 0;
+	TimeToSpawnEachAi = 0;
+
+	ArchersSpawned = 0;
+	ArchersToSpawn = 0;
+	KnightsSpawned = 0;
+	KnightsToSpawn = 0;
+
+
+	NextWaveCountDown = 3.f;
+	bWaveStarted = false;
+
 	CurrentWave++;
 	UE_LOG(LogTemp, Warning, TEXT("The current wave is: %i"), CurrentWave);
 
@@ -122,7 +139,6 @@ void AWaveController::StartWave() {
 	UE_LOG(LogTemp, Warning, TEXT("This would spawn an AI every: %f"), TimeToSpawnEachAi);
 
 	bWaveStarted = true;
-	NextWaveCountDown = 3.f;
 
 
 }
