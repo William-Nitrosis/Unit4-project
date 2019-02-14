@@ -26,7 +26,7 @@ void AaiSpawner::Tick(float DeltaTime)
 
 }
 
-void AaiSpawner::spawnAi() {
+void AaiSpawner::spawnAi(bool type) {
 	// Clear the array of spawnable areas
 	spawnAreas.Empty(); 
 
@@ -56,13 +56,17 @@ void AaiSpawner::spawnAi() {
 		transform.SetRotation(FQuat(Rotation));
 
 
-		UE_LOG(LogTemp, Log, TEXT("Trying to spawn class : %s"), *class_to_spawn->GetName());
-		AActor* SpawnedAi = GetWorld()->SpawnActor(class_to_spawn, &transform);
-		
-		//AenemyAi* SpawnedAi = GetWorld()->SpawnActor<AenemyAi>(randomBoxPos, Rotation);
-		UE_LOG(LogTemp, Log, TEXT("Class spawned"));
+		//UE_LOG(LogTemp, Log, TEXT("Trying to spawn class : %s"), *class_to_spawn->GetName());
+		AenemyAi* SpawnedAi = Cast<AenemyAi>(GetWorld()->SpawnActor(class_to_spawn, &transform));
 
-		if (IsValid(SpawnedAi)) { UE_LOG(LogTemp, Log, TEXT("SpawnedAi is valid")); } else { UE_LOG(LogTemp, Log, TEXT("SPawnedAi is not valid")); }
+		if (SpawnedAi) {
+			if (type) {
+				SpawnedAi->UnitType_ = UnitType::Unit_archer;
+				SpawnedAi->OnConstruction(SpawnedAi->GetTransform());
+			}
+		}
+
+		//if (IsValid(SpawnedAi)) { UE_LOG(LogTemp, Log, TEXT("SpawnedAi is valid")); } else { UE_LOG(LogTemp, Log, TEXT("SPawnedAi is not valid")); }
 
 		
 

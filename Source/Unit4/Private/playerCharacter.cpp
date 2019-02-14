@@ -31,7 +31,7 @@ void AplayerCharacter::BeginPlay()
 	GetComponents(springComps);
 
 	/*for (int i = 0; i < springComps.Num(); i++) {
-		UE_LOG(LogTemp, Warning, TEXT("%s"), *FString(springComps[i]->GetName()));
+		`
 	}*/
 
 	SpringArm = springComps[0];
@@ -101,12 +101,55 @@ void AplayerCharacter::MouseY(float AxisValue)
 }
 
 void AplayerCharacter::shootDown()
-{
+{ /*
+	UE_LOG(LogTemp, Warning, TEXT("SHOOTING"));
+	//Hit contains information about what the raycast hit.
+	TArray<FHitResult> Hits;
+	FHitResult HitData(ForceInit);
 
+	//The length of the ray in units.
+	//For more flexibility you can expose a public variable in the editor
+	float RayLength = 400;
+
+	//The Origin of the raycast
+	FVector StartLocation = SpringArm->GetForwardVector();
+
+	//The EndLocation of the raycast
+	FVector EndLocation = StartLocation + (StartLocation * RayLength);
+
+	//Collision parameters. The following syntax means that we don't want the trace to be complex
+	FCollisionQueryParams CollisionParameters;
+
+	bool rayCast = GetWorld()->LineTraceMultiByChannel(Hits, StartLocation, EndLocation, ECC_Visibility, CollisionParameters);
+
+	if (rayCast) {
+
+		DrawDebugLine(
+			GetWorld(),
+			StartLocation,
+			EndLocation,
+			FColor(255, 0, 0),
+			false, -1, 0,
+			12.333
+		);
+
+
+		for (FHitResult& HitData : Hits)
+		{
+			if (HitData.GetActor()) // pointer check
+			{
+				AenemyAi* enemy = Cast<AenemyAi>(HitData.GetActor()); // Type Check
+				if (!enemy) return; // Pointer Check
+
+				UGameplayStatics::ApplyDamage(enemy, 10.f, this->GetController(), this, DamageType);
+			}
+		}
+	}*/
 }
 
 void AplayerCharacter::shootUp()
 {
+	
 
 }
 

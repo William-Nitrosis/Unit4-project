@@ -28,6 +28,7 @@ public:
 	UPROPERTY(EditAnywhere)
 	float mouseWheelScale = 10.f;
 
+	TSubclassOf<UDamageType> DamageType;
 
 protected:
 	// Called when the game starts or when spawned

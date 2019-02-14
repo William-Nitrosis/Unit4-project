@@ -10,6 +10,7 @@
 #include "Engine.h"
 #include "po_barricade.h"
 #include "playerCharacter.h"
+#include "Crystal.h"
 #include "enemyAi.generated.h"
 
 #define GETENUMSTRING(etype, evalue) ( (FindObject<UEnum>(ANY_PACKAGE, TEXT(etype), true) != nullptr) ? FindObject<UEnum>(ANY_PACKAGE, TEXT(etype), true)->GetEnumName((int32)evalue) : FString("Invalid - are you sure enum uses UENUM() macro?") )
@@ -69,6 +70,7 @@ public:
 	State state_ = State::State_idle;
 
 	bool bCanPathfind = true;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TArray<AActor*> TargetActors;
 
 	UPROPERTY(EditAnywhere)
@@ -96,6 +98,7 @@ public:
 
 	Apo_barricade* barricadePointer;
 	AplayerCharacter* playerPointer;
+	ACrystal* CrystalPointer;
 
 
 
