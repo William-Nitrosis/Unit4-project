@@ -88,6 +88,7 @@ void AWaveController::Tick(float DeltaTime)
 
 			if (AiInLevel.Num() == 0) {
 				NextWaveCountDown -= DeltaTime;
+				GEngine->AddOnScreenDebugMessage(-1, DeltaTime, FColor::Green, FString::Printf(TEXT("The next wave will start in: %f"), NextWaveCountDown));
 				if (NextWaveCountDown < 0) { 
 					bWaveStarted = false;
 					StartWave(); 
@@ -137,6 +138,9 @@ void AWaveController::StartWave() {
 
 	TimeToSpawnEachAi = (TotalTime / AiToSpawnTotal);
 	UE_LOG(LogTemp, Warning, TEXT("This would spawn an AI every: %f"), TimeToSpawnEachAi);
+
+	GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Green, FString::Printf(TEXT("The current wave is: %i"), CurrentWave));
+	GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Green, FString::Printf(TEXT("Wave length: %f"), TotalTime));
 
 	bWaveStarted = true;
 

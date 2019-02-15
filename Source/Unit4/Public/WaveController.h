@@ -64,7 +64,7 @@ public:
 
 
 	float GR = 1.61803399;
-	float Difficulty = 1;
+	float Difficulty = 1.5f;
 
 	
 
